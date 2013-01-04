@@ -8,16 +8,24 @@ wm = pyinotify.WatchManager()  # Watch Manager
 
 class EventHandler(pyinotify.ProcessEvent):
 
-    def process_IN_CREATE(self, event):
+	def color_distance(self, img, output_file):
+		result = img.colorDistance(Color.WHITE)
+		result.save(output_file)
+	
+	def find_lines(self, img, output_file):
+		lines = img.findLines(threshold=200, minlinelength=100, cannyth1=100, cannyth2=200)
+		lines.draw(color=Color.RED)
+		img.save(output_file)
+
+	def process_IN_CREATE(self, event):
 		extension = event.name.split('.')[1]
 		if extension:	
 			try:
 				print "Processing:", event.name
 				img = Image(event.pathname)
-				result = img.colorDistance(Color.WHITE)
-				result_file = os.path.join('/var/lib/owncloud/data/beor/files/', event.name)
-				result.save(result_file)
-				print "Output:", result_file
+				output_file = os.path.join('/tmp/', event.name)
+				self.color_distance(img, output_file)
+				print "Output:", output_file
 			except IOError as e:
 				print "Can't open this file {0}: {1}".format(e.errno, e.strerror)
 		else:
