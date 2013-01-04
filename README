@@ -1,0 +1,6 @@
+Processpics.py
+
+This script borrows heavily from the pyinotify asyncnotifier example. Inotify is
+used to monitor IN_CREATE events in a target directory used for eye-fi card
+uploades. The uploaded images are processed by SimpleCV. The colorDistance from
+SimpleCV.Color.WHITE is applied to the uploaded image.
