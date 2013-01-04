@@ -4,8 +4,6 @@ import pyinotify
 import os
 from SimpleCV import Image, Color
 
-wm = pyinotify.WatchManager()  # Watch Manager
-
 class EventHandler(pyinotify.ProcessEvent):
 
 	def color_distance(self, img, output_file):
@@ -24,15 +22,15 @@ class EventHandler(pyinotify.ProcessEvent):
 				print "Processing:", event.name
 				img = Image(event.pathname)
 				output_file = os.path.join('/tmp/', event.name)
-				self.color_distance(img, output_file)
+				self.find_lines(img, output_file)
 				print "Output:", output_file
 			except IOError as e:
 				print "Can't open this file {0}: {1}".format(e.errno, e.strerror)
 		else:
 			print "Skipping this file.."
 
-handler = EventHandler()
-notifier = pyinotify.AsyncNotifier(wm, handler)
+wm = pyinotify.WatchManager()  # Watch Manager
+notifier = pyinotify.AsyncNotifier(wm, EventHandler())
 wdd = wm.add_watch('/home/beor/Pictures/eye-fi', pyinotify.IN_CREATE, rec=True)
 
 asyncore.loop()
